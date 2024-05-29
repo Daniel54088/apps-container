@@ -1,10 +1,11 @@
 "use client";
-import { PetFormProps } from "@/types/pets";
+import { PetFormProps, PetWithoutId, petSchemaWithoutId } from "@/types/pets";
 import { PetButtonTypes, petFormInputs } from "@/app/(app)/app/constants";
 import { usePetContext } from "@/lib/hooks";
 import PetFormButton from "./pet-form-button";
-import logo from "../../public/logo.svg";
 import PetFormInput from "./pet-form-input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function PetForm({
   actionType,
@@ -12,19 +13,25 @@ export default function PetForm({
 }: PetFormProps) {
   const { selectedPet, handleAddPet, handleEditPet } = usePetContext();
 
+  const {
+    register,
+    trigger,
+    getValues,
+    formState: { errors },
+  } = useForm<PetWithoutId>({
+    resolver: zodResolver(petSchemaWithoutId),
+  });
+
   const handleFormAction = async (formData: FormData) => {
-    const transformedPetData = {
-      name: formData.get("name") as string,
-      ownerName: formData.get("ownerName") as string,
-      imageUrl: formData.get("imageUrl") || logo.src,
-      age: Number(formData.get("age") as string),
-      notes: formData.get("notes") as string,
-    };
+    const result = await trigger();
+    if (!result) return;
+
+    const petData = getValues();
 
     if (actionType === PetButtonTypes.ADD) {
-      handleAddPet(transformedPetData);
+      handleAddPet(petData);
     } else if (actionType === PetButtonTypes.EDIT) {
-      handleEditPet(selectedPet!.id, transformedPetData);
+      handleEditPet(selectedPet!.id, petData);
     }
 
     onFormSubmission();
@@ -37,7 +44,11 @@ export default function PetForm({
     >
       {petFormInputs.map((input) => (
         <div key={input.name}>
-          <PetFormInput inputConfig={input} actionType={actionType} />
+          <PetFormInput
+            inputConfig={input}
+            register={register}
+            error={errors[input.name]?.message as string | undefined}
+          />
         </div>
       ))}
       <PetFormButton actionType={actionType} />

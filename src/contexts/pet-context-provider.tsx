@@ -5,7 +5,7 @@ import {
   PerContextProviderProps,
   TPetContext,
   PetsMap,
-  Pet,
+  PetWithoutId,
 } from "@/types/pets";
 import { normalizeObjArray } from "@/utils/normalize-array-to-object";
 import {
@@ -52,7 +52,7 @@ export default function PetContextProvider({
     setSelectedPetId(id);
   };
 
-  const handleAddPet = async (newPet: Omit<Pet, "id">) => {
+  const handleAddPet = async (newPet: PetWithoutId) => {
     const newPetWithId = {
       id: uuid(),
       ...newPet,
@@ -63,7 +63,7 @@ export default function PetContextProvider({
       toast.warning(result.error);
     }
   };
-  const handleEditPet = async (petId: string, newPetData: Omit<Pet, "id">) => {
+  const handleEditPet = async (petId: string, newPetData: PetWithoutId) => {
     setOptimisticPets({ action: "edit", payload: { id: petId, newPetData } });
     const result = await editPetAction(petId, newPetData);
     if (result.error) {

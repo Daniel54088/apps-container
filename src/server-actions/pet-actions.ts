@@ -2,7 +2,7 @@
 import { getCollection } from "@/lib/mongodb";
 import { getErrorMessage } from "@/utils/get-error-message";
 import { revalidatePath } from "next/cache";
-import { Pet } from "@/types/pets";
+import { Pet, PetWithoutId } from "@/types/pets";
 
 export async function addPetAction(newPet: Pet) {
   try {
@@ -22,10 +22,7 @@ export async function addPetAction(newPet: Pet) {
   }
 }
 
-export async function editPetAction(
-  petId: string,
-  newPetData: Omit<Pet, "id">
-) {
+export async function editPetAction(petId: string, newPetData: PetWithoutId) {
   try {
     const petsCollection = await getCollection("pets");
 

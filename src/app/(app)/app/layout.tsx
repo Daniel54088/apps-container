@@ -12,9 +12,10 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const usersCollection = await getCollection("pets");
+  const petsCollection = await getCollection("pets");
   const options: FindOptions<Document> = { projection: { _id: 0 } };
-  const data = await usersCollection.find({}, options).toArray();
+  if (!petsCollection) return;
+  const data = await petsCollection.find({}, options).toArray();
 
   // Transform the data to match the Pet type
   const pets: Pet[] = data.map(

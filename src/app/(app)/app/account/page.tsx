@@ -1,3 +1,4 @@
+"use client";
 import ContentBlock from "@/components/content-block";
 import H1 from "@/components/h1";
 
