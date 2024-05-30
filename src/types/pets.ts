@@ -11,6 +11,7 @@ export const petSchemaWithoutId = z
       .max(100),
     imageUrl: z.union([
       z.literal(""),
+      z.literal("/_next/static/media/logo.946bbc1f.svg"),
       z.string().trim().url({ message: "Image url must be valid url" }),
     ]),
     age: z.coerce.number().int().positive().max(99999),
@@ -20,8 +21,13 @@ export const petSchemaWithoutId = z
     ...data,
     imageUrl: data.imageUrl || logo.src,
   }));
-
 export type PetWithoutId = z.infer<typeof petSchemaWithoutId>;
+
+export const petIdSchema = z.string().uuid();
+export const petSchemaWithId = petSchemaWithoutId.and(
+  z.object({ id: petIdSchema })
+);
+export type PetWithId = z.infer<typeof petSchemaWithId>;
 
 export type Pet = PetWithoutId & {
   id: string;

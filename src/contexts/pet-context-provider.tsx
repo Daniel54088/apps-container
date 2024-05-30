@@ -63,6 +63,7 @@ export default function PetContextProvider({
       toast.warning(result.error);
     }
   };
+
   const handleEditPet = async (petId: string, newPetData: PetWithoutId) => {
     setOptimisticPets({ action: "edit", payload: { id: petId, newPetData } });
     const result = await editPetAction(petId, newPetData);

@@ -20,9 +20,19 @@ export default function PetForm({
     formState: { errors },
   } = useForm<PetWithoutId>({
     resolver: zodResolver(petSchemaWithoutId),
+    defaultValues:
+      actionType === "edit"
+        ? {
+            name: selectedPet?.name,
+            ownerName: selectedPet?.ownerName,
+            imageUrl: selectedPet?.imageUrl,
+            age: selectedPet?.age,
+            notes: selectedPet?.notes,
+          }
+        : undefined,
   });
 
-  const handleFormAction = async (formData: FormData) => {
+  const handleFormAction = async () => {
     const result = await trigger();
     if (!result) return;
 
@@ -38,10 +48,7 @@ export default function PetForm({
   };
 
   return (
-    <form
-      action={(formData) => handleFormAction(formData)}
-      className="flex flex-col space-y-3"
-    >
+    <form action={() => handleFormAction()} className="flex flex-col space-y-3">
       {petFormInputs.map((input) => (
         <div key={input.name}>
           <PetFormInput

@@ -6,6 +6,7 @@ import { Pet } from "@/types/pets";
 import { FindOptions, Document } from "mongodb";
 import { getCollection } from "@/lib/mongodb";
 import { Toaster } from "@/components/ui/sonner";
+import { connectToDatabase } from "@/lib/mongodb";
 
 export default async function Layout({
   children,
@@ -28,7 +29,7 @@ export default async function Layout({
       notes: doc.notes,
     })
   );
-
+  console.log(petsCollection);
   return (
     <>
       <BackGroundPattern />

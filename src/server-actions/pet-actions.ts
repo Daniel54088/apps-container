@@ -2,18 +2,32 @@
 import { getCollection } from "@/lib/mongodb";
 import { getErrorMessage } from "@/utils/get-error-message";
 import { revalidatePath } from "next/cache";
-import { Pet, PetWithoutId } from "@/types/pets";
+import {
+  Pet,
+  PetWithoutId,
+  petSchemaWithoutId,
+  petSchemaWithId,
+  PetWithId,
+  petIdSchema,
+} from "@/types/pets";
 
-export async function addPetAction(newPet: Pet) {
+export async function addPetAction(newPet: unknown) {
   try {
+    const validatedNewPet = petSchemaWithId.safeParse(newPet);
+    if (!validatedNewPet.success) {
+      return {
+        error: "Invalid pet data.",
+      };
+    }
+
     const petsCollection = await getCollection("pets");
 
-    const result = await petsCollection.insertOne({
-      ...newPet,
+    await petsCollection.insertOne({
+      ...validatedNewPet.data,
     });
     revalidatePath("/app/", "layout");
     return {
-      success: result,
+      success: "Added success",
     };
   } catch (error: unknown) {
     return {
@@ -22,15 +36,22 @@ export async function addPetAction(newPet: Pet) {
   }
 }
 
-export async function editPetAction(petId: string, newPetData: PetWithoutId) {
+export async function editPetAction(petId: unknown, newPetData: unknown) {
   try {
-    const petsCollection = await getCollection("pets");
+    const validatedUpdatedPet = petSchemaWithoutId.safeParse(newPetData);
+    const validatedPetId = petIdSchema.safeParse(petId);
+    if (!validatedUpdatedPet.success) {
+      return {
+        error: "Invalid pet data.",
+      };
+    }
 
+    const petsCollection = await getCollection("pets");
     const updateResult = await petsCollection.updateOne(
-      { id: petId },
+      { id: validatedPetId.data },
       {
         $set: {
-          ...newPetData,
+          ...validatedUpdatedPet.data,
         },
       }
     );
@@ -41,7 +62,7 @@ export async function editPetAction(petId: string, newPetData: PetWithoutId) {
     }
     revalidatePath("/app/", "layout");
     return {
-      success: updateResult,
+      success: "Updated success",
     };
   } catch (error: unknown) {
     return {
@@ -50,11 +71,20 @@ export async function editPetAction(petId: string, newPetData: PetWithoutId) {
   }
 }
 
-export async function deletePetAction(petId: string | undefined) {
+export async function deletePetAction(petId: unknown) {
   try {
+    const validatedPetId = petIdSchema.safeParse(petId);
+    if (!validatedPetId.success) {
+      return {
+        error: "Invalid pet data.",
+      };
+    }
+
     const petsCollection = await getCollection("pets");
 
-    const deleteResult = await petsCollection.deleteOne({ id: petId });
+    const deleteResult = await petsCollection.deleteOne({
+      id: validatedPetId.data,
+    });
 
     if (deleteResult.deletedCount === 0) {
       return {
@@ -64,7 +94,7 @@ export async function deletePetAction(petId: string | undefined) {
     revalidatePath("/app/", "layout");
 
     return {
-      success: deleteResult,
+      success: "Deleted success",
     };
   } catch (error: unknown) {
     return {
