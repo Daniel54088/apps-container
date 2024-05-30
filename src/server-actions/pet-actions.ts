@@ -1,5 +1,4 @@
 "use server";
-import { getCollection } from "@/lib/mongodb";
 import { getErrorMessage } from "@/utils/get-error-message";
 import { revalidatePath } from "next/cache";
 import {
@@ -10,6 +9,8 @@ import {
   PetWithId,
   petIdSchema,
 } from "@/types/pets";
+import { Prisma } from "@prisma/client";
+import prisma from "@/lib/db";
 
 export async function addPetAction(newPet: unknown) {
   try {
@@ -20,10 +21,11 @@ export async function addPetAction(newPet: unknown) {
       };
     }
 
-    const petsCollection = await getCollection("pets");
-
-    await petsCollection.insertOne({
-      ...validatedNewPet.data,
+    // database mutation
+    await prisma.pet.create({
+      data: {
+        ...validatedNewPet.data,
+      },
     });
     revalidatePath("/app/", "layout");
     return {
@@ -40,26 +42,21 @@ export async function editPetAction(petId: unknown, newPetData: unknown) {
   try {
     const validatedUpdatedPet = petSchemaWithoutId.safeParse(newPetData);
     const validatedPetId = petIdSchema.safeParse(petId);
-    if (!validatedUpdatedPet.success) {
+
+    if (!validatedPetId.success || !validatedUpdatedPet.success) {
       return {
         error: "Invalid pet data.",
       };
     }
 
-    const petsCollection = await getCollection("pets");
-    const updateResult = await petsCollection.updateOne(
-      { id: validatedPetId.data },
-      {
-        $set: {
-          ...validatedUpdatedPet.data,
-        },
-      }
-    );
-    if (updateResult.matchedCount === 0) {
-      return {
-        error: "Pet not found",
-      };
-    }
+    // database mutation
+    await prisma.pet.update({
+      where: {
+        id: validatedPetId.data,
+      },
+      data: validatedUpdatedPet.data,
+    });
+
     revalidatePath("/app/", "layout");
     return {
       success: "Updated success",
@@ -80,17 +77,11 @@ export async function deletePetAction(petId: unknown) {
       };
     }
 
-    const petsCollection = await getCollection("pets");
-
-    const deleteResult = await petsCollection.deleteOne({
-      id: validatedPetId.data,
+    await prisma.pet.delete({
+      where: {
+        id: validatedPetId.data,
+      },
     });
-
-    if (deleteResult.deletedCount === 0) {
-      return {
-        error: "Pet not found",
-      };
-    }
     revalidatePath("/app/", "layout");
 
     return {

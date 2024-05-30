@@ -3,20 +3,15 @@ import AppHeader from "@/components/app-header";
 import AppFooter from "@/components/app-footer";
 import PetContextProvider from "@/contexts/pet-context-provider";
 import { Pet } from "@/types/pets";
-import { FindOptions, Document } from "mongodb";
-import { getCollection } from "@/lib/mongodb";
 import { Toaster } from "@/components/ui/sonner";
-import { connectToDatabase } from "@/lib/mongodb";
+import prisma from "@/lib/db";
 
 export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const petsCollection = await getCollection("pets");
-  const options: FindOptions<Document> = { projection: { _id: 0 } };
-  if (!petsCollection) return;
-  const data = await petsCollection.find({}, options).toArray();
+  const data = await prisma.pet.findMany();
 
   // Transform the data to match the Pet type
   const pets: Pet[] = data.map(
@@ -29,7 +24,6 @@ export default async function Layout({
       notes: doc.notes,
     })
   );
-  console.log(petsCollection);
   return (
     <>
       <BackGroundPattern />
