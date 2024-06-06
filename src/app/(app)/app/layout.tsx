@@ -18,7 +18,7 @@ export default async function Layout({
 
   // Transform the data to match the Pet type
   const pets: Pet[] = data.map(
-    (doc): Pet => ({
+    (doc: Pet): Pet => ({
       id: doc.id,
       name: doc.name,
       ownerName: doc.ownerName,
