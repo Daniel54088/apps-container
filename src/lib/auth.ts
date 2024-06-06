@@ -46,7 +46,7 @@ const config = {
   ],
   callbacks: {
     authorized: ({ auth, request }) => {
-      // runs on every request with middleware
+      // runs on every request with middleware.
       const isLogin = !!auth?.user;
       const isTryingAccessingApp = request.nextUrl.pathname.includes("app");
       if (!isLogin && isTryingAccessingApp) {
