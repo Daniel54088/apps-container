@@ -18,6 +18,10 @@ const routes = [
 export default function AppHeader() {
   const activePathName = usePathname();
 
+  // if (activePathName === "/login" || activePathName === "/signup") {
+  //   location.reload();
+  // }
+
   return (
     <header className="flex justify-between items-center border-b border-white/10 py-2">
       <Logo />

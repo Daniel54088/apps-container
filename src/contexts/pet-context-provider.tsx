@@ -57,9 +57,11 @@ export default function PetContextProvider({
       id: uuid(),
       ...newPet,
     };
+    console.log("newPetWithId", newPetWithId);
     setOptimisticPets({ action: "add", payload: newPetWithId });
     const result = await addPetAction(newPetWithId);
-    if (result.error) {
+    console.log("result", result);
+    if (result?.error) {
       toast.warning(result.error);
     }
   };

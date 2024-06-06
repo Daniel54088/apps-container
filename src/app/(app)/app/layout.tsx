@@ -4,14 +4,17 @@ import AppFooter from "@/components/app-footer";
 import PetContextProvider from "@/contexts/pet-context-provider";
 import { Pet } from "@/types/pets";
 import { Toaster } from "@/components/ui/sonner";
-import prisma from "@/lib/db";
+import { checkAuth } from "@/utils/check-auth";
+import { getPetsByUserId } from "@/utils/pet-db-queries";
 
 export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const data = await prisma.pet.findMany();
+  const session = await checkAuth();
+
+  const data = await getPetsByUserId(session.user?.id);
 
   // Transform the data to match the Pet type
   const pets: Pet[] = data.map(
