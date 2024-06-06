@@ -80,8 +80,6 @@ const config = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log("url", url);
-      console.log("baseUrl", baseUrl);
       return "/app/dashboard";
     },
   },
