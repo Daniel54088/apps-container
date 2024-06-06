@@ -15,19 +15,19 @@ jobs:
         run: echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env && echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env  && echo "SITE_URL=${{ secrets.SITE_URL }}" >> .env
       - name: Build docker image
         run: docker build -t integrationninjas/nextjs-app .
-      - name: Login to docker hub
-        # run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin ${{ secrets.DOCKER_PASSWORD }}
-        run: aws --region southeast-2 ecr get-login-password | docker login --username daniel54088 --password-stdin a9082290822.ec2-3-25-225-58.ap-southeast-2.compute.amazonaws.com
-        # run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p $(aws ecr ${{ secrets.DOCKER_PASSWORD }} --region southeast-2) ec2-3-25-225-58.ap-southeast-2.compute.amazonaws.com
-      - name: Publish image to docker hub
-        run: docker push integrationninjas/nextjs-app:latest
+    #   - name: Login to docker hub
+    #     # run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin ${{ secrets.DOCKER_PASSWORD }}
+    #     run: aws --region southeast-2 ecr get-login-password | docker login --username AWS --password-stdin xxxxxxxxxxxxxx.dkr.ecr.southeast-2.amazonaws.com
+    #     # run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p $(aws ecr ${{ secrets.DOCKER_PASSWORD }} --region southeast-2) ec2-3-25-225-58.ap-southeast-2.compute.amazonaws.com
+    #   - name: Publish image to docker hub
+    #     run: docker push integrationninjas/nextjs-app:latest
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: Pull image from docker hub
-        run: docker pull integrationninjas/nextjs-app:latest
+      #   - name: Pull image from docker hub
+      #     run: docker pull integrationninjas/nextjs-app:latest
       - name: Delete old container
         run: docker rm -f nextjs-app-container
       - name: Run docker container
