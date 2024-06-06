@@ -16,7 +16,7 @@ export default async function Layout({
 
   const data = await getPetsByUserId(session.user?.id);
 
-  // Transform the data to match the Pet type
+  // Transform the data to match the Pet type.
   const pets: Pet[] = data.map(
     (doc: Pet): Pet => ({
       id: doc.id,
