@@ -1,9 +1,12 @@
 "use server";
 import bcrypt from "bcryptjs";
+import { getErrorMessage } from "@/utils/get-error-message";
 import prisma from "@/lib/db";
 import { signIn, signOut } from "@/lib/auth";
 import { authFormSchema } from "@/types/auth";
 import { AuthError } from "next-auth";
+import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function logIn(prevState: unknown, formData: unknown) {
   // check form data is valid Form type
@@ -70,11 +73,12 @@ export async function signUp(prevState: unknown, formData: unknown) {
       },
     });
   } catch (error) {
-    if (error.code === "P2002") {
-      return {
-        error: "Email already exist",
-      };
-    }
+    // if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    //   if (error.code === "P2002") {
+    //     return {
+    //       error: "Email already exist",
+    //     };
+    //   }
     return {
       error: "Could not create user",
     };
