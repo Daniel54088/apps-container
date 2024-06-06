@@ -1,8 +1,9 @@
 FROM node:20.12.2 as builder
 
-WORKDIR /app
+WORKDIR /src
 COPY package*.json ./
-RUN npm install --save-dev eslint
+RUN npm install  eslint
+RUN npx prisma generate
 RUN npm install --production
 COPY . .
 RUN npm run build
