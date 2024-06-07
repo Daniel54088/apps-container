@@ -17,7 +17,7 @@ export async function logIn(prevState: unknown, formData: unknown) {
   }
 
   try {
-    await signIn("credentials", formData, { callbackUrl: "/app/dashboard" });
+    //await signIn("credentials", formData, { callbackUrl: "/app/dashboard" });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -39,7 +39,7 @@ export async function logIn(prevState: unknown, formData: unknown) {
 }
 
 export async function logOut() {
-  await signOut({ redirectTo: "/" });
+  // await signOut({ redirectTo: "/" });
 }
 
 export async function signUp(prevState: unknown, formData: unknown) {
@@ -83,5 +83,5 @@ export async function signUp(prevState: unknown, formData: unknown) {
       error: "Could not create user",
     };
   }
-  await signIn("credentials", formData);
+  //await signIn("credentials", formData);
 }
