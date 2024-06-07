@@ -3,12 +3,9 @@ import { getErrorMessage } from "@/utils/get-error-message";
 import { revalidatePath } from "next/cache";
 import { petSchemaWithoutId, petSchemaWithId, petIdSchema } from "@/types/pets";
 import prisma from "@/lib/db";
-import { checkAuth } from "@/utils/check-auth";
 import { getPetById } from "@/utils/pet-db-queries";
 
 export async function addPetAction(newPet: unknown) {
-  const session = await checkAuth();
-
   const validatedNewPet = petSchemaWithId.safeParse(newPet);
   console.log("validatedNewPet", validatedNewPet);
   if (!validatedNewPet.success) {
@@ -19,16 +16,16 @@ export async function addPetAction(newPet: unknown) {
 
   try {
     // database mutation
-    await prisma.pet.create({
-      data: {
-        ...validatedNewPet.data,
-        user: {
-          connect: {
-            id: session.user.id,
-          },
-        },
-      },
-    });
+    // await prisma.pet.create({
+    //   data: {
+    //     ...validatedNewPet.data,
+    //     user: {
+    //       connect: {
+    //         id: session.user.id,
+    //       },
+    //     },
+    //   },
+    // });
     revalidatePath("/app/", "layout");
     return {
       success: "Added success",
@@ -42,9 +39,6 @@ export async function addPetAction(newPet: unknown) {
 }
 
 export async function editPetAction(petId: unknown, newPetData: unknown) {
-  // auth token check
-  const session = await checkAuth();
-
   //zod validation
   const validatedUpdatedPet = petSchemaWithoutId.safeParse(newPetData);
   const validatedPetId = petIdSchema.safeParse(petId);
@@ -63,11 +57,11 @@ export async function editPetAction(petId: unknown, newPetData: unknown) {
       error: "Pet not found",
     };
   }
-  if (foundedPet.userId !== session.user.id) {
-    return {
-      error: "Not authorized.",
-    };
-  }
+  // if (foundedPet.userId !== session.user.id) {
+  //   return {
+  //     error: "Not authorized.",
+  //   };
+  // }
 
   try {
     // database mutation
@@ -90,9 +84,6 @@ export async function editPetAction(petId: unknown, newPetData: unknown) {
 }
 
 export async function deletePetAction(petId: unknown) {
-  // auth token check
-  const session = await checkAuth();
-
   // zod validation
   const validatedPetId = petIdSchema.safeParse(petId);
   if (!validatedPetId.success) {
@@ -112,11 +103,11 @@ export async function deletePetAction(petId: unknown) {
       error: "Pet not found",
     };
   }
-  if (foundedPet.userId !== session.user.id) {
-    return {
-      error: "Not authorized.",
-    };
-  }
+  // if (foundedPet.userId !== session.user.id) {
+  //   return {
+  //     error: "Not authorized.",
+  //   };
+  // }
 
   try {
     await prisma.pet.delete({

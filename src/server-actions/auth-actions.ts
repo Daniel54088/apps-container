@@ -2,11 +2,13 @@
 import bcrypt from "bcryptjs";
 import { getErrorMessage } from "@/utils/get-error-message";
 import prisma from "@/lib/db";
-import { signIn, signOut } from "@/lib/auth";
+
 import { authFormSchema } from "@/types/auth";
-import { AuthError } from "next-auth";
-import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+
+const supabase = createClient();
 
 export async function logIn(prevState: unknown, formData: unknown) {
   // check form data is valid Form type
@@ -15,31 +17,39 @@ export async function logIn(prevState: unknown, formData: unknown) {
       error: "Invalid form data",
     };
   }
+  // Convert formData to js object
+  const formDataObject = Object.fromEntries(formData.entries());
 
-  try {
-    //await signIn("credentials", formData, { callbackUrl: "/app/dashboard" });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin": {
-          return {
-            error: "Invalid credentials.",
-          };
-        }
-        default: {
-          return {
-            error: "Error. Could not sign in.",
-          };
-        }
-      }
-    }
-
-    throw error; // nextjs redirects throws error, so we need to rethrow it
+  // validation with converted form object
+  const validatedAuthForm = authFormSchema.safeParse(formDataObject);
+  if (!validatedAuthForm.success) {
+    return {
+      error: "Invalid form data",
+    };
   }
+
+  const { error } = await supabase.auth.signInWithPassword(
+    validatedAuthForm.data
+  );
+
+  if (error) {
+    return {
+      error: "Error. Could not sign in.",
+    };
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/app/dashboard");
 }
 
 export async function logOut() {
-  // await signOut({ redirectTo: "/" });
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    return {
+      error: "Error. Could not sign out.",
+    };
+  }
+  redirect("/login");
 }
 
 export async function signUp(prevState: unknown, formData: unknown) {
