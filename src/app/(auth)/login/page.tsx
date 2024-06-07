@@ -1,8 +1,12 @@
 import H1 from "@/components/h1";
 import AuthForm from "@/components/auth-form";
 import Link from "next/link";
+import { getSession } from "@/utils/supabase/get-supabase-auth";
+import { redirect } from "next/navigation";
 
-export default function Login() {
+export default async function Login() {
+  const data = await getSession();
+  console.log(data);
   return (
     <main>
       <H1 className="text-center mb-5">Log In</H1>

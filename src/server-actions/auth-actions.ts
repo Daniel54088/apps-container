@@ -33,8 +33,9 @@ export async function logIn(prevState: unknown, formData: unknown) {
   );
 
   if (error) {
+    console.log("error", error.message);
     return {
-      error: "Error. Could not sign in.",
+      error: error.message,
     };
   }
 
@@ -74,24 +75,32 @@ export async function signUp(prevState: unknown, formData: unknown) {
   const { email, password } = validatedAuthForm.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // create user in db
   try {
-    await prisma.user.create({
-      data: {
-        email,
-        hashedPassword,
-      },
+    // create user in supabase
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: hashedPassword,
     });
+    if (error) {
+      console.log("error", error.message);
+      return {
+        error: error.message,
+      };
+    }
+    // create in aws db
+    if (data.user) {
+      await prisma.user.create({
+        data: {
+          id: data.user.id,
+          email,
+          hashedPassword,
+        },
+      });
+    }
   } catch (error) {
-    // if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    //   if (error.code === "P2002") {
-    //     return {
-    //       error: "Email already exist",
-    //     };
-    //   }
     return {
       error: "Could not create user",
     };
   }
-  //await signIn("credentials", formData);
+  redirect("/login");
 }

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { logIn, signUp } from "@/server-actions/auth-actions";
@@ -13,6 +13,7 @@ type AuthFormProps = {
 export default function AuthForm({ type }: AuthFormProps) {
   const [signUpError, dispatchSignUpError] = useFormState(signUp, undefined);
   const [logInError, dispatchLoginError] = useFormState(logIn, undefined);
+
   return (
     <form action={type === "login" ? dispatchLoginError : dispatchSignUpError}>
       <div className="space-y-1">

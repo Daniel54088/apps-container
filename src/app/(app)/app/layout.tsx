@@ -4,22 +4,15 @@ import AppFooter from "@/components/app-footer";
 import PetContextProvider from "@/contexts/pet-context-provider";
 import { Pet } from "@/types/pets";
 import { Toaster } from "@/components/ui/sonner";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import { getPetsByUserId } from "@/utils/pet-db-queries";
+import { getUserAuthData } from "@/utils/supabase/get-supabase-auth";
 
 export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = createClient();
-
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    redirect("/login");
-  }
-
+  const data = await getUserAuthData();
   const FoundedPets = await getPetsByUserId(data.user?.id);
 
   // Transform the data to match the Pet type.

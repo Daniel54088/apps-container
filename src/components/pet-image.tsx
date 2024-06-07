@@ -13,10 +13,6 @@ export default function PetImage({ imageUrl, size }: PetImageProps) {
   const [imgSrc, setImgSrc] = useState(imageUrl);
   const fallbackSrc = logo;
 
-  useEffect(() => {
-    setImgSrc(imageUrl);
-  }, [imageUrl]);
-
   return (
     <Image
       src={imgSrc}
