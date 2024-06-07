@@ -4,6 +4,8 @@ import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { getUserByEmail } from "@/utils/pet-db-queries";
 
+export const BASE_PATH = "/api/auth";
+
 const config = {
   pages: {
     signIn: "/login",
@@ -12,6 +14,7 @@ const config = {
     maxAge: 30 * 24 * 60 * 60,
     strategy: "jwt",
   },
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -83,11 +86,7 @@ const config = {
       return "/app/dashboard";
     },
   },
+  // basePath: BASE_PATH,
 } satisfies NextAuthConfig;
 
-export const {
-  auth,
-  signIn,
-  signOut,
-  handlers: { GET, POST },
-} = NextAuth(config);
+export const { auth, signIn, signOut, handlers } = NextAuth(config);
