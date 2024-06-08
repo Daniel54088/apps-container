@@ -5,15 +5,17 @@ import PetContextProvider from "@/contexts/pet-context-provider";
 import { Pet } from "@/types/pets";
 import { Toaster } from "@/components/ui/sonner";
 import { getPetsByUserId } from "@/utils/pet-db-queries";
-import { getUserAuthData } from "@/utils/supabase/get-supabase-auth";
+import { userTestId } from "./constants";
+// import { getUserAuthData } from "@/utils/supabase/get-supabase-auth";
 
 export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const data = await getUserAuthData();
-  const FoundedPets = await getPetsByUserId(data.user?.id);
+  // const data = await getUserAuthData();
+
+  const FoundedPets = await getPetsByUserId(userTestId);
 
   // Transform the data to match the Pet type.
   const pets: Pet[] = FoundedPets.map(

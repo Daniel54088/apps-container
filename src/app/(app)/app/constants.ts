@@ -6,6 +6,8 @@ export const PetButtonTypes = {
   DELETE: "delete",
 };
 
+export const userTestId = "a189d059-488d-4eb0-8c62-8c1e4fc693d6";
+
 export const petFormInputs: TPetFormInput[] = [
   {
     label: "Name",

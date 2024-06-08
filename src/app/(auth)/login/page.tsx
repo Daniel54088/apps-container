@@ -5,8 +5,7 @@ import { getSession } from "@/utils/supabase/get-supabase-auth";
 import { redirect } from "next/navigation";
 
 export default async function Login() {
-  const data = await getSession();
-  console.log("Login page getSession", data);
+  redirect("/");
   return (
     <main>
       <H1 className="text-center mb-5">Log In</H1>

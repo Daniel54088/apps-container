@@ -5,6 +5,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
+    // refeactor
     <main className="bg-[#5DC9A8] min-h-screen flex flex-col xl:flex-row items-center justify-center gap-10">
       <Image
         src="https://bytegrad.com/course-assets/react-nextjs/petsoft-preview.png"
