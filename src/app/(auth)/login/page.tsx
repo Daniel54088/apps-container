@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 export default async function Login() {
   const data = await getSession();
-  console.log(data);
+  console.log("Login page getSession", data);
   return (
     <main>
       <H1 className="text-center mb-5">Log In</H1>
