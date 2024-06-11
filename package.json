@@ -41,6 +41,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.5",
+    "react-select": "^5.8.0",
     "server-only": "^0.0.1",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
@@ -51,5 +52,7 @@
     "uuid": "^9.0.1",
     "zod": "^3.23.8"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1"
+  }
 }

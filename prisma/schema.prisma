@@ -32,3 +32,20 @@ model Pet {
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
+
+model Ticket {
+  id        String   @id @default(uuid())
+  title     String
+  ownerName String
+  imageUrl  String
+  labels    String[]
+  content   String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Label {
+  id    String @id @default(uuid())
+  name  String
+  color String
+}
