@@ -1,7 +1,6 @@
 import H1 from "@/components/h1";
 import AuthForm from "@/components/auth-form";
 import Link from "next/link";
-import { getSession } from "@/utils/supabase/get-supabase-auth";
 import { redirect } from "next/navigation";
 
 export default async function Login() {
