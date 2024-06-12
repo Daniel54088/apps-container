@@ -2,7 +2,7 @@ import BackGroundPattern from "@/components/background-pattern";
 import AppHeader from "@/components/app-header";
 import AppFooter from "@/components/app-footer";
 import TicketContextProvider from "@/contexts/ticketpilot-context-provider";
-import { Ticket, LabelSelectBox } from "@/types/ticketpilot";
+import { TicketWithId, LabelSelectBox } from "@/types/ticketpilot";
 import { Toaster } from "@/components/ui/sonner";
 import { getAllLabels, getAllTickets } from "@/utils/ticket-db-queries";
 
@@ -13,15 +13,24 @@ export default async function Layout({
 }>) {
   const allTickets = await getAllTickets();
   const allLabels = await getAllLabels();
-  // Transform the data to match the Ticket type.
-  const tickets: Ticket[] = allTickets.map(
-    (doc: Ticket): Ticket => ({
+
+  // Make data to be form friendly
+  const tickets: TicketWithId[] = allTickets.map(
+    (doc): TicketWithId => ({
       id: doc.id,
       title: doc.title,
       ownerName: doc.ownerName,
-      imageUrl: doc.imageUrl,
       content: doc.content,
-      labels: doc.labels,
+      imageUrl: doc.imageUrl,
+      labels: allLabels
+        .filter((_label) => doc.labels.includes(_label.id))
+        .map((_label) => {
+          return {
+            label: _label.name,
+            value: _label.id,
+            color: _label.color,
+          };
+        }),
     })
   );
 

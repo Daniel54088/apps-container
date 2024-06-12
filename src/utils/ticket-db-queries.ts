@@ -1,4 +1,4 @@
-import { Ticket } from "@/types/ticketpilot";
+import { TicketId } from "@/types/ticketpilot";
 import prisma from "@/lib/db";
 
 export async function getAllTickets() {
@@ -9,7 +9,7 @@ export async function getAllLabels() {
   return await prisma.label.findMany();
 }
 
-export async function getTicketById(ticketId: Ticket["id"]) {
+export async function getTicketById(ticketId: TicketId) {
   const ticket = await prisma.ticket.findUnique({
     where: {
       id: ticketId,

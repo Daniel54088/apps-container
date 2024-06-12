@@ -1,18 +1,21 @@
 "use client";
 import { useTicketContext } from "@/lib/hooks";
-import { Ticket, LabelSelectBox } from "@/types/ticketpilot";
+import { TicketWithOutId, TicketId } from "@/types/ticketpilot";
 import TicketButton from "./ticket-button";
 import TicketImage from "./ticket-owner-image";
-import { cn } from "@/utils/cn";
 
 export default function TicketDetails() {
-  const { selectedTicket, labels } = useTicketContext();
+  const { selectedTicket } = useTicketContext();
+  const selectedTicketId = selectedTicket?.id as string;
   return (
     <section className="flex flex-col h-full w-full">
       {selectedTicket ? (
         <>
-          <TopBar selectedTicket={selectedTicket} />
-          <OtherInfo selectedTicket={selectedTicket} labels={labels} />
+          <TopBar
+            selectedTicket={selectedTicket}
+            selectedTicketId={selectedTicketId}
+          />
+          <OtherInfo selectedTicket={selectedTicket} />
           <Notes selectedTicket={selectedTicket} />
         </>
       ) : (
@@ -30,7 +33,13 @@ function EmptyView() {
   );
 }
 
-function TopBar({ selectedTicket }: { selectedTicket: Ticket }) {
+function TopBar({
+  selectedTicket,
+  selectedTicketId,
+}: {
+  selectedTicket: TicketWithOutId;
+  selectedTicketId: TicketId;
+}) {
   const { handleDelete } = useTicketContext();
   return (
     <div className="flex items-center bg-white px-8 py-5 border-b border-light">
@@ -42,7 +51,7 @@ function TopBar({ selectedTicket }: { selectedTicket: Ticket }) {
         <TicketButton actionType="edit">Edit</TicketButton>
         <TicketButton
           actionType="delete"
-          onClick={async () => await handleDelete(selectedTicket.id)}
+          onClick={async () => await handleDelete(selectedTicketId)}
         >
           Remove
         </TicketButton>
@@ -53,10 +62,8 @@ function TopBar({ selectedTicket }: { selectedTicket: Ticket }) {
 
 function OtherInfo({
   selectedTicket,
-  labels,
 }: {
-  selectedTicket: Ticket | undefined;
-  labels: LabelSelectBox[];
+  selectedTicket: TicketWithOutId | undefined;
 }) {
   return (
     <div className="flex justify-around py-10 px-5 text-center">
@@ -73,26 +80,28 @@ function OtherInfo({
           Labels
         </h3>
         <div className="flex flex-wrap gap-2 max-w-[300px] mx-auto p-4">
-          {labels
-            .filter((label) => selectedTicket?.labels.includes(label.id))
-            .map((label) => {
-              return (
-                <div
-                  key={label.id}
-                  className="rounded-md px-3 py-1 text-white text-sm font-medium"
-                  style={{ backgroundColor: label.color }}
-                >
-                  {label.label}
-                </div>
-              );
-            })}
+          {selectedTicket?.labels.map((label) => {
+            return (
+              <div
+                key={label.value}
+                className="rounded-md px-3 py-1 text-white text-sm font-medium"
+                style={{ backgroundColor: label.color }}
+              >
+                {label.label}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
 
-function Notes({ selectedTicket }: { selectedTicket: Ticket | undefined }) {
+function Notes({
+  selectedTicket,
+}: {
+  selectedTicket: TicketWithOutId | undefined;
+}) {
   return (
     <section className="flex-1 bg-white px-7 py-5 rounded-md mb-9 mx-8 border-b border-light">
       {selectedTicket?.content}

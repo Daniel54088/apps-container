@@ -5,8 +5,8 @@ import "../styles/globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Petsoft - Pet daycare software",
-  description: "Take care of people's pets with Petsoft",
+  title: "Apps container",
+  description: "Contains multiple apps for interview coding test",
 };
 
 export default function RootLayout({
@@ -16,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} text-sm text-zinc-900 bg-[#E5E8EC] min-h-screen`}>{children}</body>
+      <body
+        className={`${inter.className} text-sm text-zinc-900 bg-[#E5E8EC] min-h-screen`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

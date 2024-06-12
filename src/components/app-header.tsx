@@ -7,7 +7,7 @@ import { cn } from "@/utils/cn";
 const routes = [
   {
     label: "Dashboard",
-    path: "/ticketpilot/dashboard",
+    path: "/ticket/dashboard",
   },
   // {
   //   label: "Account",

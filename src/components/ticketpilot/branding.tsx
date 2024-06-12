@@ -5,7 +5,7 @@ export default function Branding() {
       <H1>
         Ticket<span className="font-semibold">Pilot</span>
       </H1>
-      <p>Manage your daily tickets with ease.</p>
+      <p>Manage your work tasks with ease.</p>
     </section>
   );
 }

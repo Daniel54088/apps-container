@@ -2,15 +2,16 @@
 import { getErrorMessage } from "@/utils/get-error-message";
 import { revalidatePath } from "next/cache";
 import {
-  ticketSchemaWithoutId,
-  ticketSchemaWithId,
+  ticketFormSchema,
   ticketIdSchema,
+  ticketFormSchemaWithId,
 } from "@/types/ticketpilot";
 import prisma from "@/lib/db";
 import { getTicketById } from "@/utils/ticket-db-queries";
+import logo from "../../public/icons8-logo-33.svg";
 
 export async function addTicketAction(newTicket: unknown) {
-  const validatedNewTicket = ticketSchemaWithId.safeParse(newTicket);
+  const validatedNewTicket = ticketFormSchemaWithId.safeParse(newTicket);
 
   if (!validatedNewTicket.success) {
     return {
@@ -18,17 +19,17 @@ export async function addTicketAction(newTicket: unknown) {
     };
   }
 
-  try {
-    const labelIds = [
-      "50ea3431-77fd-4a03-9a28-30f3f7e8442f",
-      "78ec140f-5e3b-4bb1-815c-90f1454bc66a",
-    ];
+  const validatedNewTicketForDB = {
+    ...validatedNewTicket.data,
+    labels: validatedNewTicket.data.labels.map((label) => label.value),
+    imageUrl: logo.src,
+  };
 
-    // database mutation
+  try {
+    //adding ticket in to db
     await prisma.ticket.create({
       data: {
-        ...validatedNewTicket.data,
-        labels: labelIds,
+        ...validatedNewTicketForDB,
       },
     });
 
@@ -48,8 +49,8 @@ export async function editTicketAction(
   ticketId: unknown,
   newTicketData: unknown
 ) {
-  //zod validation
-  const validatedUpdatedTicket = ticketSchemaWithoutId.safeParse(newTicketData);
+  // schema validation
+  const validatedUpdatedTicket = ticketFormSchema.safeParse(newTicketData);
   const validatedTicketId = ticketIdSchema.safeParse(ticketId);
 
   if (!validatedTicketId.success || !validatedUpdatedTicket.success) {
@@ -58,21 +59,31 @@ export async function editTicketAction(
     };
   }
 
-  // Authorization check(user owns this ticket or not)
-  const foundedTicket = await getTicketById(validatedTicketId.data);
+  // Fetch existing ticket to get the current imageUrl
+  const existingTicket = await prisma.ticket.findUnique({
+    where: { id: validatedTicketId.data },
+    select: { imageUrl: true },
+  });
 
-  if (!foundedTicket) {
+  if (!existingTicket) {
     return {
-      error: "Ticket not found",
+      error: "Can't find this ticket.",
     };
   }
+
+  const validatedUpdatedTicketForDB = {
+    ...validatedUpdatedTicket.data,
+    labels: validatedUpdatedTicket.data.labels.map((label) => label.value),
+    imageUrl: existingTicket.imageUrl,
+  };
+
   try {
     // database mutation
     await prisma.ticket.update({
       where: {
         id: validatedTicketId.data,
       },
-      data: validatedUpdatedTicket.data,
+      data: validatedUpdatedTicketForDB,
     });
 
     revalidatePath("/app/", "layout");

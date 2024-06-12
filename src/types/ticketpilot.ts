@@ -1,8 +1,8 @@
 import { z } from "zod";
 import logo from "../../public/logo.svg";
 
-// ticket schemas and types
-export const ticketSchemaWithoutId = z.object({
+// ticket schemas
+export const ticketBaseSchema = z.object({
   title: z
     .string()
     .trim()
@@ -13,21 +13,57 @@ export const ticketSchemaWithoutId = z.object({
     .trim()
     .min(1, { message: "Ticket owner is required." })
     .max(100),
-  labels: z.array(z.string()),
-  imageUrl: z.string().url(),
   content: z.union([z.literal(""), z.string().trim().max(1000)]),
 });
-export type TicketWithoutId = z.infer<typeof ticketSchemaWithoutId>;
+
+export const ticketSchemaWithoutId = ticketBaseSchema.and(
+  z.object({
+    labels: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.string().trim(),
+          color: z.string().trim(),
+        })
+      )
+      .min(1, "You have to choose at least 1 label")
+      .max(3, "You can only have up to 3 labels."),
+    imageUrl: z.string(),
+  })
+);
 
 export const ticketIdSchema = z.string().uuid();
-export const ticketSchemaWithId = ticketSchemaWithoutId.and(
-  z.object({ id: ticketIdSchema })
-);
-export type TicketWithId = z.infer<typeof ticketSchemaWithId>;
 
-export type Ticket = TicketWithoutId & {
-  id: string;
-};
+export const ticketFormSchema = ticketBaseSchema.and(
+  z.object({
+    labels: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.string().trim(),
+          color: z.string().trim(),
+        })
+      )
+      .min(1, "You have to choose at least 1 label")
+      .max(3, "You can only have up to 3 labels."),
+  })
+);
+
+export const ticketFormSchemaWithId = ticketFormSchema.and(
+  z.object({
+    id: z.string().uuid(),
+  })
+);
+
+// Ticket types
+export type TicketWithOutId = z.infer<typeof ticketSchemaWithoutId>;
+
+export type TicketFormWithOutId = z.infer<typeof ticketFormSchema>;
+
+export type TicketId = z.infer<typeof ticketIdSchema>;
+
+export type TicketWithId = TicketWithOutId & { id: TicketId };
+export type TicketFormWithId = TicketFormWithOutId & { id: TicketId };
 
 // label schema and types
 export const labelSchemaWithoutId = z.object({
@@ -59,7 +95,7 @@ export type TicketFormProps = {
   onFormSubmission: () => void;
 };
 export type TicketContextProviderProps = {
-  data: Ticket[];
+  data: TicketWithId[];
   labels: LabelSelectBox[];
   children: React.ReactNode;
 };
@@ -67,26 +103,26 @@ export type TicketContextProviderProps = {
 // Others
 
 export type TTicketContext = {
-  tickets: Ticket[];
+  tickets: TicketWithId[];
   labels: LabelSelectBox[];
   selectedTicketId: string | null;
-  selectedTicket: Ticket | null;
+  selectedTicket: TicketWithId | null;
   handleSelectedTicketIdChange: (id: string) => void;
   searchQuery: string;
   handleSearchQueryChange: (newValue: string) => void;
-  handleAddTicket: (newTicket: TicketWithoutId) => Promise<void>;
+  handleAddTicket: (newTicket: TicketFormWithOutId) => Promise<void>;
   handleEditTicket: (
     ticketId: string,
-    newTicketData: TicketWithoutId
+    newTicketData: TicketFormWithOutId
   ) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
 };
 
-export type TicketsMap = Record<string, Ticket>;
+export type TicketsMap = Record<string, TicketWithId>;
 
 export type TTicketFormInput = {
   label: string;
-  name: "title" | "ownerName" | "labels" | "imageUrl" | "content";
+  name: "title" | "ownerName" | "labels" | "content";
   inputType: "text" | "text-area" | "drop-down";
   required: boolean;
 };

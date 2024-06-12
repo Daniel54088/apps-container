@@ -1,8 +1,8 @@
 "use client";
 import {
   TicketFormProps,
-  TicketWithoutId,
-  ticketSchemaWithoutId,
+  TicketFormWithOutId,
+  ticketFormSchema,
 } from "@/types/ticketpilot";
 import {
   TicketButtonTypes,
@@ -18,16 +18,17 @@ export default function TicketForm({
   actionType,
   onFormSubmission,
 }: TicketFormProps) {
-  const { selectedTicket, handleAddTicket, handleEditTicket } =
+  const { selectedTicket, handleAddTicket, handleEditTicket, labels } =
     useTicketContext();
 
   const {
     register,
     trigger,
     getValues,
+    control,
     formState: { errors },
-  } = useForm<TicketWithoutId>({
-    resolver: zodResolver(ticketSchemaWithoutId),
+  } = useForm<TicketFormWithOutId>({
+    resolver: zodResolver(ticketFormSchema),
     defaultValues:
       actionType === "edit"
         ? {
@@ -36,7 +37,12 @@ export default function TicketForm({
             labels: selectedTicket?.labels,
             content: selectedTicket?.content,
           }
-        : undefined,
+        : {
+            title: "",
+            ownerName: "",
+            labels: [],
+            content: "",
+          },
   });
 
   const handleFormAction = async () => {
@@ -60,8 +66,11 @@ export default function TicketForm({
         <div key={input.name}>
           <TicketFormInput
             inputConfig={input}
+            labels={labels}
             register={register}
             error={errors[input.name]?.message as string | undefined}
+            control={control}
+            actionType={actionType}
           />
         </div>
       ))}

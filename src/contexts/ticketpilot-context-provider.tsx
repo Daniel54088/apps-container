@@ -5,7 +5,7 @@ import {
   TicketContextProviderProps,
   TTicketContext,
   TicketsMap,
-  TicketWithoutId,
+  TicketFormWithOutId,
 } from "@/types/ticketpilot";
 import { normalizeObjArray } from "@/utils/normalize-array-to-object";
 import {
@@ -53,15 +53,15 @@ export default function TicketContextProvider({
     setSelectedTicketId(id);
   };
 
-  const handleAddTicket = async (newTicket: TicketWithoutId) => {
+  const handleAddTicket = async (newTicket: TicketFormWithOutId) => {
     const newTicketWithId = {
       id: uuid(),
       ...newTicket,
     };
-    console.log("newTicketWithId", newTicketWithId);
+
     setOptimisticTickets({ action: "add", payload: newTicketWithId });
     const result = await addTicketAction(newTicketWithId);
-    console.log("result", result);
+
     if (result?.error) {
       toast.warning(result.error);
     }
@@ -69,7 +69,7 @@ export default function TicketContextProvider({
 
   const handleEditTicket = async (
     ticketId: string,
-    newTicketData: TicketWithoutId
+    newTicketData: TicketFormWithOutId
   ) => {
     setOptimisticTickets({
       action: "edit",
