@@ -30,7 +30,9 @@ export default function TicketList() {
               )}
             >
               <TicketImage imageUrl={ticket.imageUrl} size={45} />
-              <h4 className="font-semibold text-left">{ticket.title}</h4>
+              <h4 className="font-semibold text-left max-w-[200px] break-words">
+                {ticket.title}
+              </h4>
             </button>
           </li>
         ))}

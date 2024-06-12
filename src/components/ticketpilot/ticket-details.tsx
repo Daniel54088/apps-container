@@ -44,7 +44,7 @@ function TopBar({
   return (
     <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <TicketImage imageUrl={selectedTicket.imageUrl} size={75} />
-      <h2 className="text-2xl front-semibold leading-7 ml-5 break-words">
+      <h2 className="text-2xl front-semibold leading-7 ml-5 break-words max-w-[260px]">
         {selectedTicket.title}
       </h2>
       <div className="ml-auto space-x-2 flex-shrink-0 pl-2">

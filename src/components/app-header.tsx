@@ -7,12 +7,8 @@ import { cn } from "@/utils/cn";
 const routes = [
   {
     label: "Dashboard",
-    path: "/ticket/dashboard",
+    path: "/ticketpilot/dashboard",
   },
-  // {
-  //   label: "Account",
-  //   path: "/app/account",
-  // },
 ];
 
 export default function AppHeader() {
