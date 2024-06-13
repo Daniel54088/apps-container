@@ -25,6 +25,10 @@ export default function TicketContextProvider({
   labels,
   children,
 }: TicketContextProviderProps) {
+  console.log("context api data length");
+  console.log(data.map((item) => item.title));
+  console.log(data.length);
+
   const [currentTickets, setCurrentTickets] = useState<TicketWithId[]>(data);
   console.log("currentTickets length");
   console.log(currentTickets.map((item) => item.title));

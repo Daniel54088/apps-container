@@ -47,6 +47,10 @@ export default async function Layout({
     };
   });
 
+  console.log("tickets");
+  console.log(tickets.length);
+  console.log(tickets.map((item) => item.title));
+
   return (
     <>
       <BackGroundPattern />
