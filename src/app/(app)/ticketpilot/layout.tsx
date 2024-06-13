@@ -14,8 +14,8 @@ export default async function Layout({
   const allTickets = await getAllTickets();
   const allLabels = await getAllLabels();
 
-  console.log("allTickets");
-  console.log(allTickets);
+  console.log("allTickets length");
+  console.log(allTickets.length);
 
   // Make data to be form friendly
   const tickets: TicketWithId[] = allTickets.map(
