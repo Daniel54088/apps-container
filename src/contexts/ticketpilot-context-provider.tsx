@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, createContext, useOptimistic } from "react";
+import { useState, createContext } from "react";
 import {
   TicketContextProviderProps,
   TTicketContext,
   TicketsMap,
   TicketFormWithOutId,
+  TicketWithId,
 } from "@/types/ticketpilot";
 import { normalizeObjArray } from "@/utils/normalize-array-to-object";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/server-actions/ticketpilot-actions";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
+import logo from "../../public/icons8-logo-33.svg";
 
 export const TicketContext = createContext<TTicketContext | null>(null);
 
@@ -23,30 +25,12 @@ export default function TicketContextProvider({
   labels,
   children,
 }: TicketContextProviderProps) {
-  const [optimisticTickets, setOptimisticTickets] = useOptimistic(
-    data,
-    (state, { action, payload }) => {
-      switch (action) {
-        case "add":
-          return [...state, { ...payload }];
-        case "edit":
-          return state.map((ticket) => {
-            if (ticket.id === payload.id) {
-              return { ...ticket, ...payload };
-            }
-            return ticket;
-          });
-        case "delete":
-          return state.filter((ticket) => ticket.id !== payload.id);
-        default:
-          return state;
-      }
-    }
-  );
+  const [currentTickets, setCurrentTickets] = useState<TicketWithId[]>(data);
+
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const ticketMap: TicketsMap = normalizeObjArray(optimisticTickets);
+  const ticketMap: TicketsMap = normalizeObjArray(currentTickets);
   const selectedTicket = selectedTicketId ? ticketMap[selectedTicketId] : null;
 
   const handleSelectedTicketIdChange = (id: string) => {
@@ -59,22 +43,37 @@ export default function TicketContextProvider({
       ...newTicket,
     };
 
-    setOptimisticTickets({ action: "add", payload: newTicketWithId });
+    const newCurrentTickets: TicketWithId[] = currentTickets.concat({
+      ...newTicketWithId,
+      imageUrl: logo.src,
+    });
+
+    setCurrentTickets(newCurrentTickets);
+
     const result = await addTicketAction(newTicketWithId);
 
     if (result?.error) {
       toast.warning(result.error);
     }
+    setSelectedTicketId(newTicketWithId.id);
   };
 
   const handleEditTicket = async (
     ticketId: string,
     newTicketData: TicketFormWithOutId
   ) => {
-    setOptimisticTickets({
-      action: "edit",
-      payload: { id: ticketId, newTicketData },
-    });
+    const updatedTicketWithId: TicketWithId = {
+      id: ticketId,
+      ...newTicketData,
+      imageUrl: logo.src,
+    };
+
+    const newTicketMap = {
+      ...ticketMap,
+      [ticketId]: updatedTicketWithId,
+    };
+
+    setCurrentTickets(Object.values(newTicketMap).map((ticket) => ticket));
     const result = await editTicketAction(ticketId, newTicketData);
     if (result.error) {
       toast.warning(result.error);
@@ -82,7 +81,10 @@ export default function TicketContextProvider({
   };
 
   const handleDelete = async (TicketId: string) => {
-    setOptimisticTickets({ action: "delete", payload: { id: TicketId } });
+    delete ticketMap[TicketId];
+
+    setCurrentTickets(Object.values(ticketMap).map((ticket) => ticket));
+
     const result = await deleteTicketAction(selectedTicket?.id);
     if (result.error) {
       toast.warning(result.error);
@@ -96,7 +98,7 @@ export default function TicketContextProvider({
   return (
     <TicketContext.Provider
       value={{
-        tickets: optimisticTickets,
+        tickets: currentTickets,
         labels,
         selectedTicketId,
         selectedTicket,

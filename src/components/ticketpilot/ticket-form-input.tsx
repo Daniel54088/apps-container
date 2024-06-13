@@ -30,8 +30,7 @@ export default function TicketFormInput({
   const labelOptions = labels.map((item) => {
     return { label: item.label, value: item.value, color: item.color };
   });
-  console.log("actionType", actionType);
-  console.log("labelOptions", labelOptions);
+
   return (
     <div className="space-y-1">
       <Label htmlFor={inputConfig.name}>{inputConfig.label}</Label>
@@ -40,7 +39,6 @@ export default function TicketFormInput({
           control={control}
           name="labels"
           render={({ field: { onChange, value } }) => {
-            console.log("value", value);
             let selectedOptions = value;
             if (actionType === "edit") {
             }
