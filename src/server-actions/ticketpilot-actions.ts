@@ -33,7 +33,7 @@ export async function addTicketAction(newTicket: unknown) {
       },
     });
 
-    revalidatePath("/app/", "layout");
+    revalidatePath("/ticketpilot/", "layout");
     return {
       success: "Added success",
     };
@@ -86,7 +86,7 @@ export async function editTicketAction(
       data: validatedUpdatedTicketForDB,
     });
 
-    revalidatePath("/app/", "layout");
+    revalidatePath("/ticketpilot/", "layout");
     return {
       success: "Updated success",
     };
@@ -124,7 +124,7 @@ export async function deleteTicketAction(ticketId: unknown) {
         id: validatedTicketId.data,
       },
     });
-    revalidatePath("/app/", "layout");
+    revalidatePath("/ticketpilot/", "layout");
 
     return {
       success: "Deleted success",
