@@ -26,7 +26,9 @@ export default function TicketContextProvider({
   children,
 }: TicketContextProviderProps) {
   const [currentTickets, setCurrentTickets] = useState<TicketWithId[]>(data);
-
+  console.log("currentTickets length");
+  console.log(currentTickets.map((item) => item.title));
+  console.log(currentTickets.length);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
