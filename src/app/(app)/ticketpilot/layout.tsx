@@ -13,10 +13,6 @@ export default async function Layout({
 }>) {
   const allTickets = await getAllTickets();
   const allLabels = await getAllLabels();
-
-  console.log("allTickets length");
-  console.log(allTickets.length);
-
   // Make data to be form friendly
   const tickets: TicketWithId[] = allTickets.map(
     (doc): TicketWithId => ({
@@ -46,10 +42,6 @@ export default async function Layout({
       label: label.name,
     };
   });
-
-  console.log("tickets");
-  console.log(tickets.length);
-  console.log(tickets.map((item) => item.title));
 
   return (
     <>
